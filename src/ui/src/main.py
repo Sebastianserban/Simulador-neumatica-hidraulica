@@ -1,26 +1,19 @@
 import flet as ft
 
-
 def main(page: ft.Page):
-    counter = ft.Text("0", size=50, data=0)
+    page.title = "Simulador de Circuitos"
+    page.window_width = 800
+    page.window_height = 600
 
-    def increment_click(e):
-        counter.data += 1
-        counter.value = str(counter.data)
-        counter.update()
-
-    page.floating_action_button = ft.FloatingActionButton(
-        icon=ft.Icons.ADD, on_click=increment_click
-    )
-    page.add(
-        ft.SafeArea(
-            ft.Container(
-                counter,
-                alignment=ft.alignment.center,
-            ),
-            expand=True,
-        )
+    # Área de trabajo (lienzo)
+    canvas = ft.Container(
+        content=ft.Text("Área de trabajo", size=20, color=ft.colors.BLACK),
+        expand=True,  # Ocupa todo el espacio disponible
+        bgcolor=ft.Colors.BLUE_GREY_400,  # Color de fondo
+        alignment=ft.alignment.center,  # Centrar el contenido
     )
 
+    # Estructura de la app (por ahora solo el lienzo)
+    page.add(canvas)
 
-ft.app(main)
+ft.app(target=main)
