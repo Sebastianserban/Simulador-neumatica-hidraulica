@@ -21,9 +21,9 @@ class SimuladorUI:
         unidad_mantenimiento = UnidadMantenimiento()
         presurizado_neumatico = PresurizadoNeumatico()
 
-        return ft.Column(
+        # Crear el Column con los controles
+        column = ft.Column(
             controls=[
-                ft.Text("Herramientas"),
                 cilindor_doble_efecto.imagen,
                 cilindor_simple_efecto.imagen,
                 valvula_and.imagen,
@@ -34,19 +34,27 @@ class SimuladorUI:
                 valvula5_2_muelle.imagen,
                 presurizado_neumatico.imagen
             ],
-            width=200,
             alignment=ft.alignment.top_center,
-            spacing=10
+            spacing=7,
+            expand=True,  # Asegura que el Column ocupe todo el espacio disponible
+        )
+
+        # Envolver el Column en un Container para cambiar el color de fondo
+        return ft.Container(
+            content=column,
+            width=140,  # Ancho de la barra lateral
+            bgcolor="#706D54",  # Color de fondo
+           # border_radius=10,  # Bordes redondeados
+            padding=10,  # Espaciado interno
+            margin=0
         )
 
     def _crear_canvas(self):
         return ft.Container(
-            width=1200,
-            height=1200,
             expand=True,
-            bgcolor=ft.colors.BLUE_GREY_400,
+            bgcolor="#A08963",
             alignment=ft.alignment.center,
         )
 
     def _crear_layout(self):
-        return ft.Row(controls=[self.sidebar, self.canvas], spacing=10)
+        return ft.Row(controls=[self.sidebar, self.canvas], spacing=0, expand=True)
