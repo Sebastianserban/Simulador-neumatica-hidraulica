@@ -18,7 +18,6 @@ class SimuladorUI:
         valvula3_2_muelle = Valvula3_2Muelle()
         valvula5_2_cosa = Valvula5_2Cosa()
         valvula5_2_muelle = Valvula5_2Muelle()
-        unidad_mantenimiento = UnidadMantenimiento()
         presurizado_neumatico = PresurizadoNeumatico()
 
         # Crear el Column con los controles
@@ -50,10 +49,31 @@ class SimuladorUI:
         )
 
     def _crear_canvas(self):
+        # Crear una instancia de UnidadMantenimiento
+        unidad_mantenimiento = UnidadMantenimiento()
+
+        # Envolver la imagen en un Container para agregar margen
+        imagen_con_margen = ft.Container(
+            content=unidad_mantenimiento.imagen,  # Agregar la imagen de la Unidad de Mantenimiento
+            margin=60  # Agregar un margen de 10 píxeles alrededor de la imagen
+        )
+
+    # Crear un Column para organizar los controles en el canvas
+        colm = ft.Column(
+            controls=[
+                imagen_con_margen  # Usar el Container con margen
+            ],
+            alignment=ft.MainAxisAlignment.END,  # Alinear el contenido al final (abajo)
+            horizontal_alignment=ft.CrossAxisAlignment.START,  # Alinear a la izquierda
+            expand=True  # Expandir el Column para ocupar todo el espacio disponible
+        )
+
+    # Devolver un Container que contiene el Column
         return ft.Container(
-            expand=True,
-            bgcolor="#A08963",
-            alignment=ft.alignment.center,
+            content=colm,  # Agregar el Column como contenido del Container
+            expand=True,  # Expandir el Container para ocupar todo el espacio disponible
+            bgcolor="#A08963",  # Color de fondo del canvas
+            alignment=ft.Alignment(-1,1)  # Alinear el contenido en la esquina inferior izquierda
         )
 
     def _crear_layout(self):

@@ -69,8 +69,8 @@ class UnidadMantenimiento:
     def __init__(self):
         self.imagen = ft.Image(
             src="src/ui/src/assets/Simbolos neumatica/miscelanea/unidad de mantenimiento.png",
-            width=100,
-            height=100
+            width=120,
+            height=120
         )
 
 class PresurizadoNeumatico:
