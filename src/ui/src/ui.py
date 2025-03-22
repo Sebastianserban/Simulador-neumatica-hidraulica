@@ -68,9 +68,40 @@ class SimuladorUI:
             expand=True  # Expandir el Column para ocupar todo el espacio disponible
         )
 
+        boton_reanudar = ft.ElevatedButton(
+            text="▶️",  # Emoji de Play
+            #on_click=self._reanudar_simulacion,  # Función para manejar el evento
+            bgcolor="#4CAF50",  # Color de fondo verde
+            color="white"  # Color del texto
+        ) 
+
+        boton_quitar = ft.ElevatedButton(
+            text="🗑️",  # Emoji de Papelera
+            #on_click=self._quitar_elementos,  # Función para manejar el evento
+            bgcolor="#F44336",  # Color de fondo rojo
+            color="white"  # Color del texto
+        )
+
+        botones = ft.Row(
+            controls=[boton_reanudar, boton_quitar],  # Agregar los botones al Row
+            alignment=ft.MainAxisAlignment.CENTER,  # Alinear los botones al centro
+            spacing=10  # Espaciado entre los botones
+        )
+
+        
     # Devolver un Container que contiene el Column
         return ft.Container(
-            content=colm,  # Agregar el Column como contenido del Container
+            content=ft.Stack(
+                controls=[
+                    colm,
+                    ft.Container(
+                        content=botones,
+                        alignment=ft.alignment.top_right,
+                        margin=10
+                    )
+                ],
+                expand=True         
+            ),  # Agregar el Column como contenido del Container
             expand=True,  # Expandir el Container para ocupar todo el espacio disponible
             bgcolor="#A08963",  # Color de fondo del canvas
             alignment=ft.Alignment(-1,1)  # Alinear el contenido en la esquina inferior izquierda
