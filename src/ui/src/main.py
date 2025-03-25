@@ -10,4 +10,4 @@ def main(page: ft.Page):
     page.add(simulador.layout)
 
 
-ft.app(target=main)
+ft.app(target=main) 

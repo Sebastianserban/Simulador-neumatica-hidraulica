@@ -1,111 +1,150 @@
 import flet as ft
 from components import *
 
-class SimuladorUI:
+class Draggable(ft.Container):
+    def __init__(self, content, top=50, left=50):
+        super().__init__(
+            content=ft.GestureDetector(
+                content=content,
+                drag_interval=10,
+                on_pan_update=self.drag
+            ),
+            left=left,
+            top=top,
+            bgcolor=ft.Colors.TRANSPARENT
+        )
+
+    def drag(self, e: ft.DragUpdateEvent):
+        self.left = max(0, self.left + e.delta_x)
+        self.top = max(0, self.top + e.delta_y)
+        self.update()
+
+class SimulatorUI:
     def __init__(self, page):
         self.page = page
-        self.sidebar = self._crear_barra_lateral()  # Función para crear la barra lateral
-        self.canvas = self._crear_canvas()          # Función para crear el canvas
-        self.layout = self._crear_layout()          # Función para crear el layout
+        self.page.title = "Simulador Neumático"
+        self.setup_ui()
 
-    # Creación de la barra lateral
-    def _crear_barra_lateral(self):
-        cilindor_doble_efecto = CilindorDobleEfecto()
-        cilindor_simple_efecto = CilindorSimpleEfecto()
-        valvula_and = ValvulaAND()
-        valvula_or = ValvulaOR()
-        valvula3_2_cosa = Valvula3_2Cosa()
-        valvula3_2_muelle = Valvula3_2Muelle()
-        valvula5_2_cosa = Valvula5_2Cosa()
-        valvula5_2_muelle = Valvula5_2Muelle()
-        presurizado_neumatico = PresurizadoNeumatico()
+    def setup_ui(self):
+        # Tamaños personalizados para cada componente
+        self.sizes = {
+            "sidebar": {
+                "default": 60,
+                "Presurizador": 40,  # Más pequeño en sidebar
+                "Valvula AND": 50,   # Más pequeña en sidebar
+                "Unidad de Mantenimiento": 70  # Más grande en sidebar
+            },
+            "canvas": {
+                "default": 90,
+                "Presurizador": 60,  # Más pequeño en canvas
+                "Valvula AND": 70,   # Más pequeña en canvas
+                "Unidad de Mantenimiento": 150  # Mucho más grande en canvas
+            }
+        }
 
-        # Crear el Column con los controles
-        column = ft.Column(
-            controls=[
-                cilindor_doble_efecto.imagen,
-                cilindor_simple_efecto.imagen,
-                valvula_and.imagen,
-                valvula_or.imagen,
-                valvula3_2_cosa.imagen,
-                valvula3_2_muelle.imagen,
-                valvula5_2_cosa.imagen,
-                valvula5_2_muelle.imagen,
-                presurizado_neumatico.imagen
-            ],
-            alignment=ft.alignment.top_center,
-            spacing=7,
-            expand=True,  # Asegura que el Column ocupe todo el espacio disponible
-        )
+        # Componentes disponibles con tamaños personalizados
+        self.components = {
+            "Cilindro Doble efectos": CilindorDobleEfecto(size=self.sizes["sidebar"]["default"]),
+            "Cilindro Simple": CilindorSimpleEfecto(size=self.sizes["sidebar"]["default"]),
+            "Valvula AND": ValvulaAND(size=self.sizes["sidebar"]["Valvula AND"]),
+            "Valvula OR": ValvulaOR(size=self.sizes["sidebar"]["default"]),
+            "Valvula 3/2 con Rodillo": Valvula3_2Cosa(size=self.sizes["sidebar"]["default"]),
+            "Valvula 3-2 con Muelle": Valvula3_2Muelle(size=self.sizes["sidebar"]["default"]),
+            "Valvula 5-2 con Rodillo": Valvula5_2Cosa(size=self.sizes["sidebar"]["default"]),
+            "Valvula 5-2 con Muelle": Valvula5_2Muelle(size=self.sizes["sidebar"]["default"]),
+            "Presurizador": PresurizadoNeumatico(size=self.sizes["sidebar"]["Presurizador"]),
+            #"Unidad de Mantenimiento": UnidadMantenimiento(size=self.sizes["sidebar"]["Unidad de Mantenimiento"])
+        }
 
-        # Envolver el Column en un Container para cambiar el color de fondo
-        return ft.Container(
-            content=column,
-            width=140,  # Ancho de la barra lateral
-            bgcolor="#706D54",  # Color de fondo
-           # border_radius=10,  # Bordes redondeados
-            padding=10,  # Espaciado interno
-            margin=0
-        )
-
-    def _crear_canvas(self):
-        # Crear una instancia de UnidadMantenimiento
-        unidad_mantenimiento = UnidadMantenimiento()
-
-        # Envolver la imagen en un Container para agregar margen
-        imagen_con_margen = ft.Container(
-            content=unidad_mantenimiento.imagen,  # Agregar la imagen de la Unidad de Mantenimiento
-            margin=60  # Agregar un margen de 10 píxeles alrededor de la imagen
-        )
-
-    # Crear un Column para organizar los controles en el canvas
-        colm = ft.Column(
-            controls=[
-                imagen_con_margen  # Usar el Container con margen
-            ],
-            alignment=ft.MainAxisAlignment.END,  # Alinear el contenido al final (abajo)
-            horizontal_alignment=ft.CrossAxisAlignment.START,  # Alinear a la izquierda
-            expand=True  # Expandir el Column para ocupar todo el espacio disponible
-        )
-
-        boton_reanudar = ft.ElevatedButton(
-            text="▶️",  # Emoji de Play
-            #on_click=self._reanudar_simulacion,  # Función para manejar el evento
-            bgcolor="#4CAF50",  # Color de fondo verde
-            color="white"  # Color del texto
-        ) 
-
-        boton_quitar = ft.ElevatedButton(
-            text="🗑️",  # Emoji de Papelera
-            #on_click=self._quitar_elementos,  # Función para manejar el evento
-            bgcolor="#F44336",  # Color de fondo rojo
-            color="white"  # Color del texto
-        )
-
-        botones = ft.Row(
-            controls=[boton_reanudar, boton_quitar],  # Agregar los botones al Row
-            alignment=ft.MainAxisAlignment.CENTER,  # Alinear los botones al centro
-            spacing=10  # Espaciado entre los botones
-        )
-
-        
-    # Devolver un Container que contiene el Column
-        return ft.Container(
-            content=ft.Stack(
+        # Barra lateral con botones
+        sidebar = ft.Container(
+            content=ft.Column(
                 controls=[
-                    colm,
                     ft.Container(
-                        content=botones,
-                        alignment=ft.alignment.top_right,
-                        margin=10
-                    )
+                        content=ft.Column([
+                            comp.imagen,
+                            ft.ElevatedButton(
+                                text=name,
+                                on_click=lambda e, c=comp: self.add_to_canvas(c),
+                                width=140,
+                                height=40
+                            )
+                        ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                        padding=5,
+                    ) for name, comp in self.components.items()
                 ],
-                expand=True         
-            ),  # Agregar el Column como contenido del Container
-            expand=True,  # Expandir el Container para ocupar todo el espacio disponible
-            bgcolor="#A08963",  # Color de fondo del canvas
-            alignment=ft.Alignment(-1,1)  # Alinear el contenido en la esquina inferior izquierda
+                spacing=10,
+                scroll=ft.ScrollMode.AUTO
+            ),
+            width=180,
+            bgcolor=ft.Colors.BROWN_700,
+            padding=10
         )
 
-    def _crear_layout(self):
-        return ft.Row(controls=[self.sidebar, self.canvas], spacing=0, expand=True)
+        # Área de trabajo con Stack
+        self.canvas_stack = ft.Stack([])
+        
+        # Añadir unidad de mantenimiento fija en esquina inferior izquierda
+        unidad_mantenimiento = UnidadMantenimiento(size=self.sizes["canvas"]["Unidad de Mantenimiento"])
+        self.fixed_unit = ft.Container(
+            content=unidad_mantenimiento.imagen,
+            left=20,
+            bottom=20,  # Fija en la esquina inferior izquierda
+            width=self.sizes["canvas"]["Unidad de Mantenimiento"],
+            height=self.sizes["canvas"]["Unidad de Mantenimiento"]
+        )
+        self.canvas_stack.controls.append(self.fixed_unit)
+        
+        canvas_container = ft.Container(
+            content=self.canvas_stack,
+            expand=True,
+            bgcolor=ft.Colors.AMBER_100,
+            padding=10
+        )
+
+        # Botones de control en la parte inferior
+        control_buttons = ft.Row([
+            ft.ElevatedButton("Iniciar Simulación", icon=ft.icons.PLAY_ARROW),
+            ft.ElevatedButton("Detener", icon=ft.icons.STOP),
+            ft.ElevatedButton("Limpiar Canvas", icon=ft.icons.CLEAR),
+            ft.ElevatedButton("Guardar", icon=ft.icons.SAVE),
+            ft.ElevatedButton("Cargar", icon=ft.icons.UPLOAD_FILE),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
+
+        # Layout principal
+        self.page.add(
+            ft.Column([
+                ft.Row([sidebar, canvas_container], expand=True),
+                ft.Divider(),
+                control_buttons
+            ], expand=True)
+        )
+
+    def add_to_canvas(self, component):
+        # No añadir más unidades de mantenimiento (ya hay una fija)
+        if isinstance(component, UnidadMantenimiento):
+            return
+            
+        # Determinar el tamaño adecuado para cada componente
+        if isinstance(component, PresurizadoNeumatico):
+            component_size = self.sizes["canvas"]["Presurizador"]
+        elif isinstance(component, ValvulaAND):
+            component_size = self.sizes["canvas"]["Valvula AND"]
+        else:
+            component_size = self.sizes["canvas"]["default"]
+            
+        # Creamos una nueva imagen con el tamaño adecuado
+        canvas_image = ft.Image(
+            src=component.imagen.src,
+            width=component_size,
+            height=component_size
+        )
+        
+        draggable = Draggable(canvas_image)
+        self.canvas_stack.controls.append(draggable)
+        self.page.update()
+
+def main(page: ft.Page):
+    SimulatorUI(page)
+
+ft.app(target=main)
